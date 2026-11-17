@@ -13,7 +13,7 @@ try:
     from nexora.app import main
 except Exception as import_error:
     # Keep import-time failures visible on screen instead of showing a blank app.
-    def main(page: ft.Page):
+    def main(page: ft.Page, startup_error=import_error):
         page.title = "NEXORA — Startup error"
         page.bgcolor = "#0B1020"
         page.padding = 24
@@ -21,9 +21,9 @@ except Exception as import_error:
             ft.Column(
                 [
                     ft.Text("NEXORA", size=28, weight=ft.FontWeight.BOLD),
-                    ft.Text("تعذر تحميل التطبيق." , size=18, color="white"),
+                    ft.Text("تعذر تحميل التطبيق.", size=18, color="white"),
                     ft.Text(
-                        f"{type(import_error).__name__}: {import_error}",
+                        f"{type(startup_error).__name__}: {startup_error}",
                         color="#F5C66A",
                         selectable=True,
                     ),
