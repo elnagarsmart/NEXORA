@@ -1,58 +1,49 @@
-# NEXORA — Smart Digital World
+# NEXORA — Android App
 
-A bilingual (Arabic/English) cross-platform starter built with Python + Flet, FastAPI and Supabase.
+NEXORA is being prepared as an installable **Android application (APK)**. It is not intended to be installed as a website or PWA.
 
-## Included in this first build
-- Responsive Flet app shell for Android, Windows and Web
-- Arabic/English interface toggle and light/dark mode
-- Email/password and Google sign-in entry points through Supabase Auth
-- Dashboard sections: AI assistant (provider-ready placeholder), files, notes, community, messaging, tasks, learning, search and settings
-- FastAPI health endpoint and starter API
-- Supabase SQL schema with Row Level Security, profiles, notes, tasks, posts, conversations, messages, reports and role scaffolding
-- Local SQLite cache for offline notes/tasks starter data
-- Windows run script and build guidance
+## Android APK
 
-## Requirements
-- Python 3.11+
-- Supabase project (free tier availability and limits can change)
-- Android build: Flutter + Android SDK are required by Flet's packaging toolchain
-- Windows build: Windows machine and Flet packaging dependencies
+The repository includes a GitHub Actions workflow that builds an APK whenever code is pushed to `main`, and can also be started manually from the Actions tab.
 
-## Run locally (Windows)
-1. Install Python 3.11+.
-2. Copy `.env.example` to `.env` and fill the Supabase URL and publishable/anon key.
-3. Open a terminal in this folder:
-   ```bash
-   python -m venv .venv
-   .venv\\Scripts\\activate
-   pip install -r requirements.txt
-   python -m flet run
-   ```
-4. API (optional, separate terminal):
-   ```bash
-   uvicorn backend.main:app --reload
-   ```
+The build artifact is named `NEXORA-Android-APK` and contains the APK file. Download the artifact ZIP, extract it, then tap the `.apk` file on your Android phone to install it. Android may ask you to allow installation for the app used to open the file.
 
-## Build
-- Web: `flet build web`
-- Android APK: `flet build apk`
-- Windows: `flet build windows`
+Build command used by the workflow:
 
-The exact Flet build prerequisites depend on the OS and installed SDKs. Build commands are included as a starting point, not a claim that binaries have already been produced.
+```bash
+flet build apk --product NEXORA --org com.elnagarsmart --bundle-id com.elnagarsmart.nexora
+```
+
+The APK is a native Android install package built with Flet/Flutter. The build workflow is configured, but an APK is only available after the GitHub Actions build finishes successfully.
+
+## Run the source locally
+
+```bash
+python -m venv .venv
+# Windows: .venv\\Scripts\\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+## Backend (optional, separate from the Android app)
+
+Install backend dependencies separately:
+
+```bash
+pip install -r requirements-backend.txt
+uvicorn backend.main:app --reload
+```
 
 ## Supabase setup
+
 1. Create a Supabase project.
 2. Run `supabase/schema.sql` in the SQL Editor.
-3. Configure Authentication > Providers > Google if Google sign-in is required.
-4. Set the app's redirect URL(s) in Supabase Auth URL Configuration.
-5. Put the project URL and publishable/anon key in `.env`.
+3. Copy `.env.example` to `.env` and fill in the Supabase project URL and publishable/anon key.
+4. Configure Google OAuth and the allowed redirect URLs in Supabase Auth if Google sign-in is needed.
 
-Never put a Supabase service-role key in the client app. The schema enables RLS and restricts user-owned records. Public community posts are readable only when published; report/block/moderation workflows should be enabled before opening community features to the public.
+Never put a Supabase service-role key inside the Android app. The current repository is a starter build: several modules are UI placeholders, and authentication, messaging, community moderation, role management, and cloud sync still need implementation and device testing before public release.
 
-## Important launch checklist
-- Configure Google OAuth credentials and redirect URLs.
-- Configure email provider and email confirmation templates.
-- Add server-side moderation and rate limits before public launch.
-- Add account deletion, privacy policy, terms, reporting and blocking.
-- Configure backups and test RLS policies with multiple test accounts.
-- Do not expose private messages or private files in public search.
+## Android signing
+
+The automated APK is suitable for initial device testing. Before distributing production updates or publishing to Google Play, configure a private release keystore and keep it outside the public repository. Always preserve the same signing key for future updates.
